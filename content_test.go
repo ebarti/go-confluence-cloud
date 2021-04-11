@@ -27,12 +27,12 @@ func TestContentGetter(t *testing.T) {
 	assert.Equal(t, &Content{
 		Results: []Results{Results{
 			ID: "ContentResult",
-			Children: ContentChildren{Attachment: Attachment{
+			Children: Children{Attachment: Attachment{
 				Results: []Results{AttachmentResult},
-				Links:   GenericLinks{Next: "/rest/api/content/1/child/attachment?limit=25&start=25"},
+				Links:   Links{Next: "/rest/api/content/1/child/attachment?limit=25&start=25"},
 			}},
 		}},
-		Links: GenericLinks{Base: "http://" + URL + "/wiki"},
+		Links: Links{Base: "http://" + URL + "/wiki"},
 	}, s)
 }
 
