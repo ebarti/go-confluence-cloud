@@ -34,6 +34,14 @@ func TestAuth(t *testing.T) {
 	assert.Equal(t, "token", auth[1])
 }
 
+func TestNewApi(t *testing.T) {
+	username := "trollingbots@glovo.com"
+	token := "tR0llf4C3HkKm72c8Ao90gv88"
+	_, err := NewAPI("https://glovo.atlassian.net/rest/api", username, token)
+
+	assert.Nil(t, err)
+}
+
 func TestEmptyAuth(t *testing.T) {
 
 	req := httptest.NewRequest("POST", "https://test.test", nil)
