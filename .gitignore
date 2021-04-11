@@ -1,0 +1,4 @@
+examples/test.go
+examples/epages.go
+coverage.out
+.idea
