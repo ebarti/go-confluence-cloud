@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetContentEndpoints(t *testing.T) {
+func Test_GetContentEndpoint(t *testing.T) {
 	a, err := NewAPI("https://test.test", "username", "token")
 	assert.Nil(t, err)
 
@@ -15,7 +15,7 @@ func TestGetContentEndpoints(t *testing.T) {
 	assert.Equal(t, "/content/", url.Path)
 }
 
-func TestContentGetter(t *testing.T) {
+func Test_GetContent(t *testing.T) {
 	server := confluenceRestAPIStub()
 	defer server.Close()
 
@@ -25,7 +25,30 @@ func TestContentGetter(t *testing.T) {
 	s, err := api.GetContent(ContentQuery{})
 	assert.Nil(t, err)
 	assert.Equal(t, &Content{
-		Results: []Results{Results{
+		Results: []Results{{
+			ID: "ContentResult",
+			Children: Children{Attachment: Attachment{
+				Results: []Results{AttachmentResult},
+				Links:   Links{Next: "/rest/api/content/1/child/attachment?limit=25&start=25"},
+			}},
+		}},
+		Links: Links{Base: "http://" + URL + "/wiki"},
+	}, s)
+}
+
+func Test_GetContentFromNext(t *testing.T) {
+	server := confluenceRestAPIStub()
+	defer server.Close()
+
+	api, err := NewAPI(server.URL+"/wiki/rest/api", "username", "token")
+	assert.Nil(t, err)
+
+	links := Links{Base: server.URL + "/wiki", Next: "/rest/api/content?limit=25&start=0"}
+
+	s, err := api.GetContentFromNext(links)
+	assert.Nil(t, err)
+	assert.Equal(t, &Content{
+		Results: []Results{{
 			ID: "ContentResult",
 			Children: Children{Attachment: Attachment{
 				Results: []Results{AttachmentResult},

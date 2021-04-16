@@ -76,9 +76,20 @@ func confluenceRestAPIStub() *httptest.Server {
 		case "/wiki/rest/api/unknown":
 			http.Error(w, "", http.StatusRequestTimeout)
 			return
-		case "/wiki/rest/api/content/":
+		case "/wiki/rest/api/content/", "/wiki/rest/api/content?limit=25&start=0":
 			resp = Content{
-				Results: []Results{Results{
+				Results: []Results{{
+					ID: "ContentResult",
+					Children: Children{Attachment: Attachment{
+						Results: []Results{AttachmentResult},
+						Links:   Links{Next: "/rest/api/content/1/child/attachment?limit=25&start=25"},
+					}},
+				}},
+				Links: Links{Base: "http://" + URL + "/wiki"},
+			}
+		case "/wiki/rest/api/content?next=true&expand=body.storage&limit=1&start=1":
+			resp = Content{
+				Results: []Results{{
 					ID: "ContentResult",
 					Children: Children{Attachment: Attachment{
 						Results: []Results{AttachmentResult},
