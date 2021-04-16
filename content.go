@@ -55,7 +55,7 @@ func (a *API) GetContent(query ContentQuery) (*Content, error) {
 }
 
 // GetContentFromNext queries content using Links previously retrieved
-func (a *API) GetContentFromNext(links Links) (interface{}, error) {
+func (a *API) GetContentFromNext(links Links) (*Content, error) {
 	if links.Base == "" || links.Next == "" {
 		return nil, nil
 	}
