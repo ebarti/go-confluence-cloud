@@ -28,7 +28,7 @@ func (a *API) getContentGenericEndpoint(id string, t string) (*url.URL, error) {
 	return url.ParseRequestURI(a.endPoint.String() + "/content/" + id + "/" + t)
 }
 
-// GetContent querys content using a query parameters
+// GetContent queries content using ContentQuery
 func (a *API) GetContent(query ContentQuery) (*Content, error) {
 	ep, err := a.getContentEndpoint()
 	if err != nil {
@@ -41,6 +41,29 @@ func (a *API) GetContent(query ContentQuery) (*Content, error) {
 		return nil, err
 	}
 
+	res, err := a.Request(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var content Content
+	err = json.Unmarshal(res, &content)
+	if err != nil {
+		return nil, err
+	}
+	return &content, nil
+}
+
+// GetContentFromNext queries content using Links previously retrieved
+func (a *API) GetContentFromNext(links Links) (interface{}, error) {
+	if links.Base == "" || links.Next == "" {
+		return nil, nil
+	}
+	nextUrl := links.Base + links.Next
+	req, err := http.NewRequest("GET", nextUrl, nil)
+	if err != nil {
+		return nil, err
+	}
 	res, err := a.Request(req)
 	if err != nil {
 		return nil, err
