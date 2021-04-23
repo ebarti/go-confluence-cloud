@@ -1,13 +1,15 @@
 package confluentcloud
 
 import (
+	"crypto/tls"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_GetContentEndpoint(t *testing.T) {
-	a, err := NewAPI("https://test.test", "username", "token")
+	a, err := newAPI("https://test.test", "username", "token")
 	assert.Nil(t, err)
 
 	url, err := a.getContentEndpoint()
@@ -15,11 +17,59 @@ func Test_GetContentEndpoint(t *testing.T) {
 	assert.Equal(t, "/content/", url.Path)
 }
 
+func Test_GetContentIDEndpoint(t *testing.T) {
+	a, err := newAPI("https://test.test", "username", "token")
+	assert.Nil(t, err)
+
+	url, err := a.getContentIDEndpoint("test")
+	assert.Nil(t, err)
+	assert.Equal(t, "/content/test", url.Path)
+}
+
+func Test_GetContentChildEndpoint(t *testing.T) {
+	a, err := newAPI("https://test.test", "username", "token")
+	assert.Nil(t, err)
+
+	url, err := a.getContentChildEndpoint("1", "2")
+	assert.Nil(t, err)
+	assert.Equal(t, "/content/1/child/2", url.Path)
+}
+
+func Test_GetContentGenericEndpoint(t *testing.T) {
+	a, err := newAPI("https://test.test", "username", "token")
+	assert.Nil(t, err)
+
+	url, err := a.getContentGenericEndpoint("1", "2")
+	assert.Nil(t, err)
+	assert.Equal(t, "/content/1/2", url.Path)
+}
+
 func Test_GetContent(t *testing.T) {
 	server := confluenceRestAPIStub()
 	defer server.Close()
 
 	api, err := NewAPI(server.URL+"/wiki/rest/api", "username", "token")
+	assert.Nil(t, err)
+
+	s, err := api.GetContent(ContentQuery{})
+	assert.Nil(t, err)
+	assert.Equal(t, &Content{
+		Results: []Results{{
+			ID: "ContentResult",
+			Children: Children{Attachment: Attachment{
+				Results: []Results{AttachmentResult},
+				Links:   Links{Next: "/rest/api/content/1/child/attachment?limit=25&start=25"},
+			}},
+		}},
+		Links: Links{Base: "http://" + URL + "/wiki"},
+	}, s)
+}
+
+func Test_GetContenWithClient(t *testing.T) {
+	server := confluenceRestAPIStub()
+	defer server.Close()
+	myClient := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: false}}}
+	api, err := NewAPIWithClient(server.URL+"/wiki/rest/api", myClient)
 	assert.Nil(t, err)
 
 	s, err := api.GetContent(ContentQuery{})

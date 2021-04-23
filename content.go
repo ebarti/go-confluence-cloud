@@ -9,27 +9,27 @@ import (
 )
 
 // getContentIDEndpoint creates the correct api endpoint by given id
-func (a *API) getContentIDEndpoint(id string) (*url.URL, error) {
+func (a *api) getContentIDEndpoint(id string) (*url.URL, error) {
 	return url.ParseRequestURI(a.endPoint.String() + "/content/" + id)
 }
 
 // getContentEndpoint creates the correct api endpoint
-func (a *API) getContentEndpoint() (*url.URL, error) {
+func (a *api) getContentEndpoint() (*url.URL, error) {
 	return url.ParseRequestURI(a.endPoint.String() + "/content/")
 }
 
 // getContentChildEndpoint creates the correct api endpoint by given id and type
-func (a *API) getContentChildEndpoint(id string, t string) (*url.URL, error) {
+func (a *api) getContentChildEndpoint(id string, t string) (*url.URL, error) {
 	return url.ParseRequestURI(a.endPoint.String() + "/content/" + id + "/child/" + t)
 }
 
 // getContentGenericEndpoint creates the correct api endpoint by given id and type
-func (a *API) getContentGenericEndpoint(id string, t string) (*url.URL, error) {
+func (a *api) getContentGenericEndpoint(id string, t string) (*url.URL, error) {
 	return url.ParseRequestURI(a.endPoint.String() + "/content/" + id + "/" + t)
 }
 
 // GetContent queries content using ContentQuery
-func (a *API) GetContent(query ContentQuery) (*Content, error) {
+func (a *api) GetContent(query ContentQuery) (*Content, error) {
 	ep, err := a.getContentEndpoint()
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (a *API) GetContent(query ContentQuery) (*Content, error) {
 }
 
 // GetContentFromNext queries content using Links previously retrieved
-func (a *API) GetContentFromNext(links Links) (*Content, error) {
+func (a *api) GetContentFromNext(links Links) (*Content, error) {
 	if links.Base == "" || links.Next == "" {
 		return nil, nil
 	}
@@ -77,7 +77,7 @@ func (a *API) GetContentFromNext(links Links) (*Content, error) {
 	return &content, nil
 }
 
-func (a *API) GetAttachmentsFromResult(result Results, baseURL string) ([]Results, error) {
+func (a *api) GetAttachmentsFromResult(result Results, baseURL string) ([]Results, error) {
 	next := result.Children.Attachment.Links.Next
 	results := result.Children.Attachment.Results
 	for {

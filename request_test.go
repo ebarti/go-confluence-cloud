@@ -27,7 +27,7 @@ func TestRequest(t *testing.T) {
 	server := confluenceRestAPIStub()
 	defer server.Close()
 
-	api, err := NewAPI(server.URL+"/wiki/rest/api", "userame", "token")
+	api, err := newAPI(server.URL+"/wiki/rest/api", "userame", "token")
 	assert.Nil(t, err)
 
 	testValues := []testValuesRequest{

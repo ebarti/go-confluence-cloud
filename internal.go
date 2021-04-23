@@ -8,8 +8,12 @@ import (
 	"net/url"
 )
 
-// NewAPI implements API constructor
-func NewAPI(location string, username string, token string) (*API, error) {
+// NewAPI implements api constructor
+func NewAPI(location string, username string, token string) (API, error) {
+	return newAPI(location, username, token)
+}
+
+func newAPI(location string, username string, token string) (*api, error) {
 	if len(location) == 0 {
 		return nil, errors.New("url empty")
 	}
@@ -20,7 +24,7 @@ func NewAPI(location string, username string, token string) (*API, error) {
 		return nil, err
 	}
 
-	a := new(API)
+	a := new(api)
 	a.endPoint = u
 	a.token = token
 	a.username = username
@@ -34,16 +38,16 @@ func NewAPI(location string, username string, token string) (*API, error) {
 	return a, nil
 }
 
-// NewAPIWithClient creates a new API instance using an existing HTTP client.
+// NewAPIWithClient creates a new api instance using an existing HTTP client.
 // Useful when using oauth or other authentication methods.
-func NewAPIWithClient(location string, client *http.Client) (*API, error) {
+func NewAPIWithClient(location string, client *http.Client) (API, error) {
 	u, err := url.ParseRequestURI(location)
 
 	if err != nil {
 		return nil, err
 	}
 
-	a := new(API)
+	a := new(api)
 	a.endPoint = u
 	a.client = client
 
@@ -51,7 +55,7 @@ func NewAPIWithClient(location string, client *http.Client) (*API, error) {
 }
 
 // VerifyTLS to enable disable certificate checks
-func (a *API) VerifyTLS(set bool) {
+func (a *api) VerifyTLS(set bool) {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: !set},
 	}

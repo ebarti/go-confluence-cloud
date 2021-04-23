@@ -5,8 +5,17 @@ import (
 	"net/url"
 )
 
-// API is the main api data structure
-type API struct {
+type API interface {
+	Request(*http.Request) ([]byte, error)
+	SendContentRequest(*url.URL, string, *Content) (*Content, error)
+	VerifyTLS(bool)
+	GetContent(ContentQuery) (*Content, error)
+	GetContentFromNext(Links) (*Content, error)
+	GetAttachmentsFromResult(Results, string) ([]Results, error)
+}
+
+// api is the main api data structure
+type api struct {
 	endPoint        *url.URL
 	client          *http.Client
 	username, token string

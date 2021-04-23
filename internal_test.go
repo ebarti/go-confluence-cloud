@@ -21,7 +21,7 @@ func TestNewAPI(t *testing.T) {
 	}
 
 	for _, test := range testValues {
-		api, err := NewAPI(test.Input[0], test.Input[1], test.Input[2])
+		api, err := newAPI(test.Input[0], test.Input[1], test.Input[2])
 		if err != nil {
 			assert.Equal(t, test.Error.Error(), err.Error())
 		} else {

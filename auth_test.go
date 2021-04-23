@@ -13,7 +13,7 @@ func TestAuth(t *testing.T) {
 
 	req := httptest.NewRequest("POST", "https://test.test", nil)
 
-	api, err := NewAPI("https://test.test", "username", "token")
+	api, err := newAPI("https://test.test", "username", "token")
 
 	assert.Nil(t, err)
 	assert.Empty(t, req.Header)
@@ -37,7 +37,7 @@ func TestAuth(t *testing.T) {
 func TestNewApi(t *testing.T) {
 	username := "trollingbots@glovo.com"
 	token := "tR0llf4C3HkKm72c8Ao90gv88"
-	_, err := NewAPI("https://glovo.atlassian.net/rest/api", username, token)
+	_, err := newAPI("https://glovo.atlassian.net/rest/api", username, token)
 
 	assert.Nil(t, err)
 }
@@ -46,7 +46,7 @@ func TestEmptyAuth(t *testing.T) {
 
 	req := httptest.NewRequest("POST", "https://test.test", nil)
 
-	api, err := NewAPI("https://test.test", "", "")
+	api, err := newAPI("https://test.test", "", "")
 
 	assert.Nil(t, err)
 	assert.Empty(t, req.Header)

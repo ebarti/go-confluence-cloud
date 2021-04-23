@@ -12,7 +12,7 @@ import (
 )
 
 // Request implements the basic Request function
-func (a *API) Request(req *http.Request) ([]byte, error) {
+func (a *api) Request(req *http.Request) ([]byte, error) {
 	req.Header.Add("Accept", "application/json, */*")
 
 	// only auth if we can auth
@@ -69,8 +69,7 @@ func (a *API) Request(req *http.Request) ([]byte, error) {
 
 // SendContentRequest sends content related requests
 // this function is used for getting, updating and deleting content
-func (a *API) SendContentRequest(ep *url.URL, method string, c *Content) (*Content, error) {
-
+func (a *api) SendContentRequest(ep *url.URL, method string, c *Content) (*Content, error) {
 	var body io.Reader
 	if c != nil {
 		js, err := json.Marshal(c)
