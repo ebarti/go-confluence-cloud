@@ -6,6 +6,8 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -121,4 +123,87 @@ func confluenceRestAPIStub() *httptest.Server {
 	server.Listener = l
 	server.Start()
 	return server
+}
+
+func Test_SendContentRequest(t *testing.T) {
+
+	server := confluenceRestAPIStub()
+	defer server.Close()
+
+	api, err := newAPI(server.URL+"/wiki/rest/api", "userame", "token")
+	_ = server.Config.Addr
+	assert.Nil(t, err)
+
+	type args struct {
+		c      *Content
+		path   string
+		method string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Content
+		wantErr bool
+	}{
+		{
+			name: "IfCantReachPath_ReturnsError",
+			args: args{
+				path:   "786/wiki/rest/api/content/",
+				method: "GET",
+			},
+			wantErr: true,
+		},
+		{
+			name: "IfCantReachPath_ReturnsError",
+			args: args{
+				c:      &Content{},
+				path:   "786/wiki/rest/api/content/",
+				method: "GET",
+			},
+			wantErr: true,
+		},
+		{
+			name: "IfServerDoesntReturnContent_ReturnsError",
+			args: args{
+				path:   "/wiki/rest/api/test",
+				method: "GET",
+			},
+			wantErr: true,
+		},
+		{
+			name: "When GET - returns correct response",
+			args: args{
+				path:   "/wiki/rest/api/content/",
+				method: "GET",
+			},
+			want: &Content{
+				Results: []Results{{
+					ID: "ContentResult",
+					Children: Children{Attachment: Attachment{
+						Results: []Results{AttachmentResult},
+						Links:   Links{Next: "/rest/api/content/1/child/attachment?limit=25&start=25"},
+					}},
+				}},
+				Links: Links{Base: "http://" + URL + "/wiki"},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			url := &url.URL{
+				Scheme: "http",
+				Host:   URL,
+				Path:   tt.args.path,
+			}
+			got, err := api.SendContentRequest(url, tt.args.method, tt.args.c)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("SendContentRequest() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("SendContentRequest() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

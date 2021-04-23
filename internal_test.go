@@ -1,7 +1,10 @@
 package confluentcloud
 
 import (
+	"crypto/tls"
 	"fmt"
+	"net/http"
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -38,4 +41,22 @@ func TestSetDebug(t *testing.T) {
 	assert.True(t, DebugFlag)
 	SetDebug(false)
 	assert.False(t, DebugFlag)
+}
+
+func Test_api_VerifyTLS(t *testing.T) {
+	a, _ := newAPI("https://test.test", "test", "test")
+	a.VerifyTLS(true)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: false},
+	}
+	if !reflect.DeepEqual(a.client.Transport, tr) {
+		t.Fail()
+	}
+	a.VerifyTLS(false)
+	tr = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	if !reflect.DeepEqual(a.client.Transport, tr) {
+		t.Fail()
+	}
 }
