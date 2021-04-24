@@ -3,6 +3,7 @@ package confluentcloud
 import (
 	"net/http"
 	"net/url"
+	"time"
 )
 
 type API interface {
@@ -12,6 +13,7 @@ type API interface {
 	GetContent(ContentQuery) (*Content, error)
 	GetContentFromNext(Links) (*Content, error)
 	GetAttachmentsFromResult(Results, string) ([]Results, error)
+	GetSearchContentResults(SearchContentQuery) (*SearchPageResults, error)
 }
 
 // api is the main api data structure
@@ -96,4 +98,48 @@ type ContentQuery struct {
 	Trigger    string // viewed
 	Type       string // page, blogpost
 	Version    int    //version number when not lastest
+}
+
+type SearchContentQuery struct {
+	Cql                   string
+	CqlContext            map[string]string // The space, content, and content status to execute the search against: spaceKey, contentId, contentStatuses
+	cursor                string            // Pointer to a set of search results, returned as part of the next or prev URL from the previous search call.
+	Limit                 int               // The maximum number of content objects to return per page. Note, this may be restricted by fixed system limits.
+	IncludeArchivedSpaces bool              // Include content from archived spaces in the results.
+}
+
+type SearchPageResults struct {
+	Results        []SearchPageResult `json:"results"`
+	Start          int32              `json:"start"`
+	Limit          int32              `json:"limit"`
+	Size           int32              `json:"size"`
+	TotalSize      int32              `json:"totalSize"`
+	CqlQuery       string             `json:"cqlQuery"`
+	SearchDuration int32              `json:"searchDuration"`
+	Links          Links              `json:"_links"`
+}
+
+type SearchPageResult struct {
+	Content               Content          `json:"content"`
+	Title                 string           `json:"title"`
+	Excerpt               string           `json:"excerpt"`
+	Url                   string           `json:"url"`
+	ResultParentContainer ContainerSummary `json:"resultParentContainer"`
+	ResultGlobalContainer ContainerSummary `json:"resultGlobalContainer"`
+	Breadcrumbs           []Breadcrumb     `json:"breadcrumbs"`
+	EntityType            string           `json:"entityType"`
+	IconCssClass          string           `json:"iconCssClass"`
+	LastModified          time.Time        `json:"lastModified"`
+	FriendlyLastModified  string           `json:"friendlyLastModified"`
+}
+type ContainerSummary struct {
+	Title      string `json:"title"`
+	DisplayUrl string `json:"displayUrl"`
+}
+
+// Breadcrumb struct for Breadcrumb
+type Breadcrumb struct {
+	Label     string `json:"label"`
+	Url       string `json:"url"`
+	Separator string `json:"separator"`
 }

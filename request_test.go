@@ -78,6 +78,16 @@ func confluenceRestAPIStub() *httptest.Server {
 		case "/wiki/rest/api/unknown":
 			http.Error(w, "", http.StatusRequestTimeout)
 			return
+		case "/wiki/rest/api/search":
+			resp = SearchPageResults{
+				Results:        []SearchPageResult{},
+				TotalSize:      1200,
+				CqlQuery:       "testQUERY",
+				SearchDuration: 100,
+				Links: Links{
+					Base: "base",
+				},
+			}
 		case "/wiki/rest/api/content/", "/wiki/rest/api/content?limit=25&start=0":
 			resp = Content{
 				Results: []Results{{
