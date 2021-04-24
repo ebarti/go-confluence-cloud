@@ -30,9 +30,9 @@ func Test_api_GetSearchContentResults(t *testing.T) {
 func Test_api_getSearchEndpoint(t *testing.T) {
 	api, err := newAPI("https://test.test", "username", "token")
 	assert.Nil(t, err)
-	url, err := api.getSearchEndpoint()
+	got, err := api.getSearchEndpoint()
 	assert.Nil(t, err)
-	assert.Equal(t, "/search", url.Path)
+	assert.Equal(t, "/search", got.Path)
 }
 
 func Test_addSearchQueryParams(t *testing.T) {
