@@ -110,12 +110,12 @@ type SearchContentQuery struct {
 
 type SearchPageResults struct {
 	Results        []SearchPageResult `json:"results"`
-	Start          int32              `json:"start"`
-	Limit          int32              `json:"limit"`
-	Size           int32              `json:"size"`
-	TotalSize      int32              `json:"totalSize"`
+	Start          int                `json:"start"`
+	Limit          int                `json:"limit"`
+	Size           int                `json:"size"`
+	TotalSize      int                `json:"totalSize"`
 	CqlQuery       string             `json:"cqlQuery"`
-	SearchDuration int32              `json:"searchDuration"`
+	SearchDuration int                `json:"searchDuration"`
 	Links          Links              `json:"_links"`
 }
 
