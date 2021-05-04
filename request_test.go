@@ -43,7 +43,7 @@ func TestRequest(t *testing.T) {
 
 	for _, test := range testValues {
 
-		req, err := http.NewRequest("GET", api.endPoint.String()+test.Endpoint, nil)
+		req, err := http.NewRequest(http.MethodGet, api.endPoint.String()+test.Endpoint, nil)
 		assert.Nil(t, err)
 
 		b, err := api.Request(req)
@@ -159,7 +159,7 @@ func Test_SendContentRequest(t *testing.T) {
 			name: "IfCantReachPath_ReturnsError",
 			args: args{
 				path:   "786/wiki/rest/api/content/",
-				method: "GET",
+				method: http.MethodGet,
 			},
 			wantErr: true,
 		},
@@ -168,7 +168,7 @@ func Test_SendContentRequest(t *testing.T) {
 			args: args{
 				c:      &Content{},
 				path:   "786/wiki/rest/api/content/",
-				method: "GET",
+				method: http.MethodGet,
 			},
 			wantErr: true,
 		},
@@ -176,7 +176,7 @@ func Test_SendContentRequest(t *testing.T) {
 			name: "IfServerDoesntReturnContent_ReturnsError",
 			args: args{
 				path:   "/wiki/rest/api/test",
-				method: "GET",
+				method: http.MethodGet,
 			},
 			wantErr: true,
 		},
@@ -184,7 +184,7 @@ func Test_SendContentRequest(t *testing.T) {
 			name: "When GET - returns correct response",
 			args: args{
 				path:   "/wiki/rest/api/content/",
-				method: "GET",
+				method: http.MethodGet,
 			},
 			want: &Content{
 				Results: []Results{{

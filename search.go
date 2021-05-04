@@ -20,7 +20,7 @@ func (a *api) GetSearchContentResults(query SearchContentQuery) (*SearchPageResu
 	}
 	ep.RawQuery = addSearchQueryParams(query).Encode()
 
-	req, err := http.NewRequest("GET", ep.String(), nil)
+	req, err := http.NewRequest(http.MethodGet, ep.String(), nil)
 	if err != nil {
 		return nil, err
 	}

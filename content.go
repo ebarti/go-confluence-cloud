@@ -8,35 +8,16 @@ import (
 	"strings"
 )
 
-// getContentIDEndpoint creates the correct api endpoint by given id
-func (a *api) getContentIDEndpoint(id string) (*url.URL, error) {
-	return url.ParseRequestURI(a.endPoint.String() + "/content/" + id)
-}
-
-// getContentEndpoint creates the correct api endpoint
-func (a *api) getContentEndpoint() (*url.URL, error) {
-	return url.ParseRequestURI(a.endPoint.String() + "/content/")
-}
-
-// getContentChildEndpoint creates the correct api endpoint by given id and type
-func (a *api) getContentChildEndpoint(id string, t string) (*url.URL, error) {
-	return url.ParseRequestURI(a.endPoint.String() + "/content/" + id + "/child/" + t)
-}
-
-// getContentGenericEndpoint creates the correct api endpoint by given id and type
-func (a *api) getContentGenericEndpoint(id string, t string) (*url.URL, error) {
-	return url.ParseRequestURI(a.endPoint.String() + "/content/" + id + "/" + t)
-}
-
 // GetContent queries content using ContentQuery
 func (a *api) GetContent(query ContentQuery) (*Content, error) {
+
 	ep, err := a.getContentEndpoint()
 	if err != nil {
 		return nil, err
 	}
 	ep.RawQuery = addContentQueryParams(query).Encode()
 
-	req, err := http.NewRequest("GET", ep.String(), nil)
+	req, err := http.NewRequest(http.MethodGet, ep.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -56,11 +37,12 @@ func (a *api) GetContent(query ContentQuery) (*Content, error) {
 
 // GetContentFromNext queries content using Links previously retrieved
 func (a *api) GetContentFromNext(links Links) (*Content, error) {
+
 	if links.Base == "" || links.Next == "" {
 		return nil, nil
 	}
 	nextUrl := links.Base + links.Next
-	req, err := http.NewRequest("GET", nextUrl, nil)
+	req, err := http.NewRequest(http.MethodGet, nextUrl, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -77,15 +59,18 @@ func (a *api) GetContentFromNext(links Links) (*Content, error) {
 	return &content, nil
 }
 
+// GetAttachmentsFromResult gets all attachments for a given result
 func (a *api) GetAttachmentsFromResult(result Results, baseURL string) ([]Results, error) {
+
 	next := result.Children.Attachment.Links.Next
 	results := result.Children.Attachment.Results
+
 	for {
 		if next == "" {
 			break
 		}
-		rawQuery := baseURL + result.Children.Attachment.Links.Next
-		req, err := http.NewRequest("GET", rawQuery, nil)
+		rawQuery := baseURL + next
+		req, err := http.NewRequest(http.MethodGet, rawQuery, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -146,4 +131,24 @@ func addContentQueryParams(query ContentQuery) *url.Values {
 		data.Set("type", query.Type)
 	}
 	return &data
+}
+
+// getContentIDEndpoint creates the correct api endpoint by given id
+func (a *api) getContentIDEndpoint(id string) (*url.URL, error) {
+	return url.ParseRequestURI(a.endPoint.String() + "/content/" + id)
+}
+
+// getContentEndpoint creates the correct api endpoint
+func (a *api) getContentEndpoint() (*url.URL, error) {
+	return url.ParseRequestURI(a.endPoint.String() + "/content/")
+}
+
+// getContentChildEndpoint creates the correct api endpoint by given id and type
+func (a *api) getContentChildEndpoint(id string, t string) (*url.URL, error) {
+	return url.ParseRequestURI(a.endPoint.String() + "/content/" + id + "/child/" + t)
+}
+
+// getContentGenericEndpoint creates the correct api endpoint by given id and type
+func (a *api) getContentGenericEndpoint(id string, t string) (*url.URL, error) {
+	return url.ParseRequestURI(a.endPoint.String() + "/content/" + id + "/" + t)
 }
