@@ -34,12 +34,13 @@ jobs:
           go-version: 1.16.x
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Set codeclimate prefix
+        run: |
+          echo "CC_PREFIX=$(go list -m)" >> $GITHUB_ENV
       - name: Test and upload Coverage
         uses: paambaati/codeclimate-action@v2.7.5
         env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         with:
           coverageCommand: go test -coverprofile=c.out ./...
-          prefix: ${{ github.event.repository.name }}
-          coverageLocations:
-            "${{github.workspace}}/c.out:gocov"
+          prefix: ${{ env.CC_PREFIX }}
